@@ -737,40 +737,11 @@ function M.textobject(opts)
       return opts.notify ~= false and Snacks.notify.warn("No scope in range")
     end
 
-    -- determine scope range
     scope = inner and scope:inner() or scope
-
-    local from_row = scope.from
-    local indent_width = opts.linewise and 0 or vim.fn.indent(from_row)
-    local line = vim.fn.getline(from_row)
-    local tabstop = vim.o.tabstop
-
-    local visual_col = 0
-    local col = 0
-    for i = 1, #line do
-      local char = line:sub(i, i)
-      if char == "\t" then
-        local tab_width = tabstop - (visual_col % tabstop)
-        visual_col = visual_col + tab_width
-      else
-        visual_col = visual_col + 1
-      end
-
-      if visual_col > indent_width then
-        col = i - 1
-        break
-      elseif visual_col == indent_width then
-        col = i
-        break
-      end
-    end
-    if col == 0 then
-      col = #line
-    end
-
     -- determine scope range
-    local from = { from_row, col }
-    local to = { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
+    local from, to =
+      { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
+      { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
 
     -- select the range
     vim.api.nvim_win_set_cursor(0, from)
