@@ -740,7 +740,7 @@ function M.textobject(opts)
     scope = inner and scope:inner() or scope
     -- determine scope range
     local from, to =
-      { scope.from, opts.linewise and 0 or vim.fn.indent(scope.from) },
+      { scope.from, opts.linewise and 0 or vim.fn.match(vim.fn.getline(scope.from), [[\S]]) },
       { scope.to, opts.linewise and 0 or vim.fn.col({ scope.to, "$" }) - 2 }
 
     -- select the range
